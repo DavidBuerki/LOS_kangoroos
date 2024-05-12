@@ -8,9 +8,8 @@ import ch.hearc.cafheg.infrastructure.persistance.AllocataireMapper;
 import ch.hearc.cafheg.infrastructure.persistance.AllocationMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -69,5 +68,90 @@ class AllocationServiceTest {
         () -> assertThat(all.get(1).getDebut()).isEqualTo(LocalDate.now()),
         () -> assertThat(all.get(1).getFin()).isNull());
   }
+
+    @Test
+    public void getParentDroitAllocation_Given_NoActiviteLucrative_shouldBe_Parent1ETParent2() {
+      // Préparation des données d'entrée
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put("enfantResidence", "ville");
+      parameters.put("parent1ActiviteLucrative", false);
+      parameters.put("parent2ActiviteLucrative", false);
+      parameters.put("parent1Salaire", 0); // Aucun salaire pour le parent 1
+      parameters.put("parent2Salaire", 0); // Aucun salaire pour le parent 2
+
+      // Appel de la méthode à tester
+
+      AllocationService instance = new AllocationService(); // Remplacez VotreClasseVotreMethode par le nom de votre classe contenant la méthode à tester
+      String resultat = instance.getParentDroitAllocation(parameters);
+
+      // Vérification du résultat
+      assertEquals("PARENT_1_Et_PARENT_2", resultat); // On s'attend à ce que le parent 1 soit sélectionné par défaut
+
+      // Vous pouvez ajouter d'autres assertions si nécessaire pour vérifier d'autres aspects du résultat.
+    }
+
+  @Test
+  public void getParentDroitAllocation_Given_DeuxParentsActiviteLucrativeEtParentSalairePlusEleve_ShouldBe_PARENT2() {
+    // Préparation des données d'entrée
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("enfantResidence", "ville");
+    parameters.put("parent1ActiviteLucrative", true);
+    parameters.put("parent2ActiviteLucrative", true);
+    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
+    parameters.put("parent2Salaire", 1500); // Salaire du parent 2
+
+    AllocationService instance = new AllocationService(); // Remplacez VotreClasseVotreMethode par le nom de votre classe contenant la méthode à tester
+    String resultat = instance.getParentDroitAllocation(parameters);
+
+    // Vérification du résultat
+    assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il a le salaire le plus élevé
+
+    // Vous pouvez ajouter d'autres assertions si nécessaire pour vérifier d'autres aspects du résultat.
+  }
+
+  @Test
+  public void getParentDroitAllocation_Given_UnSeulParentActiviteLucrative_ShouldBe_Parent2() {
+    // Préparation des données d'entrée
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("enfantResidence", "ville");
+    parameters.put("parent1ActiviteLucrative", true);
+    parameters.put("parent2ActiviteLucrative", false);
+    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
+    parameters.put("parent2Salaire", 0); // Aucun salaire pour le parent 2
+
+    // Création d'une instance de la classe contenant la méthode à tester
+    AllocationService instance = new AllocationService();
+
+    // Appel de la méthode à tester
+    String resultat = instance.getParentDroitAllocation(parameters);
+
+    // Vérification du résultat
+    assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
+
+  }
+  @Test
+  public void getParentDroitAllocation_Given_Les2ParentsMemeSalaire_ShouldBe_Parent1ETParent2() {
+    // Préparation des données d'entrée
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("enfantResidence", "ville");
+    parameters.put("parent1ActiviteLucrative", true);
+    parameters.put("parent2ActiviteLucrative", true);
+    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
+    parameters.put("parent2Salaire", 2000); // Salaire pareil
+
+    // Création d'une instance de la classe contenant la méthode à tester
+    AllocationService instance = new AllocationService();
+
+    // Appel de la méthode à tester
+    String resultat = instance.getParentDroitAllocation(parameters);
+
+    // Vérification du résultat
+    assertEquals("Parent1"+"Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
+
+  }
+
+
+
+
 
 }

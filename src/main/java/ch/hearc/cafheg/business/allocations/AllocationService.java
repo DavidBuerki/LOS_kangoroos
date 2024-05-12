@@ -20,6 +20,11 @@ public class AllocationService {
     this.allocationMapper = allocationMapper;
   }
 
+  public AllocationService() {
+    this.allocataireMapper = new AllocataireMapper();
+    this.allocationMapper = new AllocationMapper();
+  }
+
   public List<Allocataire> findAllAllocataires(String likeNom) {
     System.out.println("Rechercher tous les allocataires");
     return allocataireMapper.findAll(likeNom);
