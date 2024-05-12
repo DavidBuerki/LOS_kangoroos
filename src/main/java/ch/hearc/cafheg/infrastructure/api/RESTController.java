@@ -2,10 +2,7 @@ package ch.hearc.cafheg.infrastructure.api;
 
 import static ch.hearc.cafheg.infrastructure.persistance.Database.inTransaction;
 
-import ch.hearc.cafheg.business.allocations.Allocataire;
-import ch.hearc.cafheg.business.allocations.Allocation;
-import ch.hearc.cafheg.business.allocations.AllocationService;
-import ch.hearc.cafheg.business.allocations.ParentAllocationParams;
+import ch.hearc.cafheg.business.allocations.*;
 import ch.hearc.cafheg.business.versements.VersementService;
 import ch.hearc.cafheg.infrastructure.pdf.PDFExporter;
 import ch.hearc.cafheg.infrastructure.persistance.AllocataireMapper;
@@ -22,10 +19,13 @@ import java.util.*;
 public class RESTController {
 
   private final AllocationService allocationService;
+
+  private final AllocationService2 allocationService2;
   private final VersementService versementService;
 
   public RESTController() {
     this.allocationService = new AllocationService(new AllocataireMapper(), new AllocationMapper());
+    this.allocationService2 = new AllocationService2(new AllocataireMapper(), new AllocationMapper());
     this.versementService = new VersementService(new VersementMapper(), new AllocataireMapper(),
         new PDFExporter(new EnfantMapper()));
   }
@@ -45,8 +45,8 @@ public class RESTController {
    */
 
   @PostMapping("/droits/quel-parent")
-  public String getParentDroitAllocation(@RequestBody ParentAllocationParams params) {
-    return inTransaction(() -> allocationService.getParentDroitAllocation(params));
+  public String getParentDroitAllocation(@RequestBody ParentAllocationPartie4 params) {
+    return inTransaction(() -> allocationService2.getParentDroitAllocation(params));
   }
 
   @GetMapping("/allocataires")

@@ -10,6 +10,8 @@ public class AllocationService {
   private static final String PARENT_1 = "Parent1";
   private static final String PARENT_2 = "Parent2";
 
+
+
   private final AllocataireMapper allocataireMapper;
   private final AllocationMapper allocationMapper;
 
@@ -52,4 +54,6 @@ public class AllocationService {
 
     return salaireP1.compareTo(salaireP2) > 0 ? PARENT_1 : PARENT_2;
   }
+
+
 }
