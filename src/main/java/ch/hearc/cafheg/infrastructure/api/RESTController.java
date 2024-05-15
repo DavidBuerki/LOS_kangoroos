@@ -20,12 +20,11 @@ public class RESTController {
 
   private final AllocationService allocationService;
 
-  private final AllocationService2 allocationService2;
+
   private final VersementService versementService;
 
   public RESTController() {
     this.allocationService = new AllocationService(new AllocataireMapper(), new AllocationMapper());
-    this.allocationService2 = new AllocationService2(new AllocataireMapper(), new AllocationMapper());
     this.versementService = new VersementService(new VersementMapper(), new AllocataireMapper(),
         new PDFExporter(new EnfantMapper()));
   }
@@ -45,8 +44,8 @@ public class RESTController {
    */
 
   @PostMapping("/droits/quel-parent")
-  public String getParentDroitAllocation(@RequestBody ParentAllocationPartie4 params) {
-    return inTransaction(() -> allocationService2.getParentDroitAllocation(params));
+  public String getParentDroitAllocation(@RequestBody ParentAllocationParams params) {
+    return inTransaction(() -> allocationService.getParentDroitAllocation(params));
   }
 
   @GetMapping("/allocataires")

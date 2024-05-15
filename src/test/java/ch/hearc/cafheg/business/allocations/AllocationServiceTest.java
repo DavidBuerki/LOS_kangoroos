@@ -69,88 +69,123 @@ class AllocationServiceTest {
         () -> assertThat(all.get(1).getFin()).isNull());
   }
 
-    @Test
-    public void getParentDroitAllocation_Given_NoActiviteLucrative_shouldBe_Parent1ETParent2() {
-      ParentAllocationParams params = new ParentAllocationParams(
-              "ville", // enfantResidence
-              false, // parent1ActiviteLucrative
-              null, // parent1Residence
-              false, // parent2ActiviteLucrative
-              null, // parent2Residence
-              false, // parentsEnsemble
-              BigDecimal.ZERO, // parent1Salaire
-              BigDecimal.ZERO // parent2Salaire
-      );
-      String resultat = allocationService.getParentDroitAllocation(params);
-
-
-      // Vérification du résultat
-      assertEquals("PARENT_1_Et_PARENT_2", resultat); // On s'attend à ce que le parent 1 soit sélectionné par défaut
-
-      // Vous pouvez ajouter d'autres assertions si nécessaire pour vérifier d'autres aspects du résultat.
-    }
-
   @Test
-  public void getParentDroitAllocation_Given_DeuxParentsActiviteLucrativeEtParentSalairePlusEleve_ShouldBe_PARENT2() {
-    // Préparation des données d'entrée
+  public void getParentDroitAllocation_Given_ActiveLucrativeSingleParent_shouldBe_Parent1() {
     ParentAllocationParams params = new ParentAllocationParams(
-            "ville",
-            true,
-            null,
-            true,
-            null,
-            false,
-            new BigDecimal("2000"),
-            new BigDecimal("1500")
+            "CantonX", // enfantResidence
+            true, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            false, // parent2ActiviteLucrative
+            null, // parent2Residence
+            false, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            true, // parent2AutoriteParentale
+            BigDecimal.valueOf(5000), // parent1Salaire
+            BigDecimal.ZERO, // parent2Salaire
+            "CantonX", // parent1WorkCanton
+            null  // parent2WorkCanton
     );
-
     String resultat = allocationService.getParentDroitAllocation(params);
-
-
-    // Vérification du résultat
-    assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il a le salaire le plus élevé
-
-    // Vous pouvez ajouter d'autres assertions si nécessaire pour vérifier d'autres aspects du résultat.
+    assertEquals("PARENT_1", resultat);
   }
 
   @Test
-  public void getParentDroitAllocation_Given_UnSeulParentActiviteLucrative_ShouldBe_Parent2() {
+  public void getParentDroitAllocation_Given_TwoParentsActiveAndOnlyParent1Autority_shouldBe_Parent1() {
     ParentAllocationParams params = new ParentAllocationParams(
-            "ville",
-            true,
-            null,
-            false,
-            null,
-            false,
-            new BigDecimal("2000"),
-            BigDecimal.ZERO
+            "CantonX", // enfantResidence
+            true, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            false, // parent2ActiviteLucrative
+            null, // parent2Residence
+            false, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            false, // parent2AutoriteParentale
+            BigDecimal.valueOf(5000), // parent1Salaire
+            BigDecimal.valueOf(6000), // parent2Salaire
+            "CantonX", // parent1WorkCanton
+            "CantonY"  // parent2WorkCanton
     );
-
     String resultat = allocationService.getParentDroitAllocation(params);
+    assertEquals("PARENT_1", resultat);
+  }
 
+  @Test
+  public void getParentDroitAllocation_Given_TwoParentsActive_shouldBe_ParentResidingWithChild() {
+    ParentAllocationParams params = new ParentAllocationParams(
+            "CantonX", // enfantResidence
+            true, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            true, // parent2ActiviteLucrative
+            "CantonY", // parent2Residence
+            false, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            true, // parent2AutoriteParentale
+            BigDecimal.valueOf(6000), // parent1Salaire
+            BigDecimal.valueOf(4000), // parent2Salaire
+            "CantonX", // parent1WorkCanton
+            "CantonY"  // parent2WorkCanton
+    );
+    String resultat = allocationService.getParentDroitAllocation(params);
+    assertEquals("PARENT_1", resultat);
+  }
 
-    // Vérification du résultat
-    assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
-
+  @Test
+  public void getParentDroitAllocation_Given_TwoSalariedParentsLivingTogetherInSameCanton_shouldBe_HighestEarning() {
+    ParentAllocationParams params = new ParentAllocationParams(
+            "CantonX", // enfantResidence
+            true, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            true, // parent2ActiviteLucrative
+            "CantonX", // parent2Residence
+            true, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            true, // parent2AutoriteParentale
+            BigDecimal.valueOf(8000), // parent1Salaire
+            BigDecimal.valueOf(10000), // parent2Salaire
+            "CantonX", // parent1WorkCanton
+            "CantonX"  // parent2WorkCanton
+    );
+    String resultat = allocationService.getParentDroitAllocation(params);
+    assertEquals("PARENT_2", resultat);
   }
   @Test
-  public void getParentDroitAllocation_Given_Les2ParentsMemeSalaire_ShouldBe_Parent1ETParent2() {
+  public void getParentDroitAllocation_Given_TwoSalariedParentsLivingTogetherNotInTheSameCanton_shouldBe_ParentWorkCantonSameThatEnfantResidence() {
     ParentAllocationParams params = new ParentAllocationParams(
-            "ville", // enfantResidence
-            true,    // parent1ActiviteLucrative
-            null,    // parent1Residence
-            true,    // parent2ActiviteLucrative
-            null,    // parent2Residence
-            false,   // parentsEnsemble
-            new BigDecimal("2000"), // parent1Salaire
-            new BigDecimal("2000")  // parent2Salaire
+            "CantonX", // enfantResidence
+            true, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            true, // parent2ActiviteLucrative
+            "CantonX", // parent2Residence
+            true, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            true, // parent2AutoriteParentale
+            BigDecimal.valueOf(8000), // parent1Salaire
+            BigDecimal.valueOf(10000), // parent2Salaire
+            "CantonX", // parent1WorkCanton
+            "CantonY"  // parent2WorkCanton
     );
-
     String resultat = allocationService.getParentDroitAllocation(params);
+    assertEquals("PARENT_1", resultat);
+  }
 
-    // Vérification du résultat
-    assertEquals("Parent1"+"Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
-
+  @Test
+  public void getParentDroitAllocation_Given_IndependentParentsLivingTogether_shouldBe_BothParents() {
+    ParentAllocationParams params = new ParentAllocationParams(
+            "CantonX", // enfantResidence
+            false, // parent1ActiviteLucrative
+            "CantonX", // parent1Residence
+            false, // parent2ActiviteLucrative
+            "CantonX", // parent2Residence
+            true, // parentsEnsemble
+            true, // parent1AutoriteParentale
+            true, // parent2AutoriteParentale
+            BigDecimal.valueOf(5000), // parent1Salaire
+            BigDecimal.valueOf(5000), // parent2Salaire
+            null, // parent1WorkCanton
+            null  // parent2WorkCanton
+    );
+    String resultat = allocationService.getParentDroitAllocation(params);
+    assertEquals("PARENT_1_Et_PARENT_2", resultat);
   }
 
 
