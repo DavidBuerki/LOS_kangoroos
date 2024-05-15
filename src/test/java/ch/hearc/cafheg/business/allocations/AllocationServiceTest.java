@@ -71,18 +71,18 @@ class AllocationServiceTest {
 
     @Test
     public void getParentDroitAllocation_Given_NoActiviteLucrative_shouldBe_Parent1ETParent2() {
-      // Préparation des données d'entrée
-      Map<String, Object> parameters = new HashMap<>();
-      parameters.put("enfantResidence", "ville");
-      parameters.put("parent1ActiviteLucrative", false);
-      parameters.put("parent2ActiviteLucrative", false);
-      parameters.put("parent1Salaire", 0); // Aucun salaire pour le parent 1
-      parameters.put("parent2Salaire", 0); // Aucun salaire pour le parent 2
+      ParentAllocationParams params = new ParentAllocationParams(
+              "ville", // enfantResidence
+              false, // parent1ActiviteLucrative
+              null, // parent1Residence
+              false, // parent2ActiviteLucrative
+              null, // parent2Residence
+              false, // parentsEnsemble
+              BigDecimal.ZERO, // parent1Salaire
+              BigDecimal.ZERO // parent2Salaire
+      );
+      String resultat = allocationService.getParentDroitAllocation(params);
 
-      // Appel de la méthode à tester
-
-      AllocationService instance = new AllocationService(); // Remplacez VotreClasseVotreMethode par le nom de votre classe contenant la méthode à tester
-      String resultat = instance.getParentDroitAllocation(parameters);
 
       // Vérification du résultat
       assertEquals("PARENT_1_Et_PARENT_2", resultat); // On s'attend à ce que le parent 1 soit sélectionné par défaut
@@ -93,15 +93,19 @@ class AllocationServiceTest {
   @Test
   public void getParentDroitAllocation_Given_DeuxParentsActiviteLucrativeEtParentSalairePlusEleve_ShouldBe_PARENT2() {
     // Préparation des données d'entrée
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("enfantResidence", "ville");
-    parameters.put("parent1ActiviteLucrative", true);
-    parameters.put("parent2ActiviteLucrative", true);
-    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
-    parameters.put("parent2Salaire", 1500); // Salaire du parent 2
+    ParentAllocationParams params = new ParentAllocationParams(
+            "ville",
+            true,
+            null,
+            true,
+            null,
+            false,
+            new BigDecimal("2000"),
+            new BigDecimal("1500")
+    );
 
-    AllocationService instance = new AllocationService(); // Remplacez VotreClasseVotreMethode par le nom de votre classe contenant la méthode à tester
-    String resultat = instance.getParentDroitAllocation(parameters);
+    String resultat = allocationService.getParentDroitAllocation(params);
+
 
     // Vérification du résultat
     assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il a le salaire le plus élevé
@@ -111,19 +115,19 @@ class AllocationServiceTest {
 
   @Test
   public void getParentDroitAllocation_Given_UnSeulParentActiviteLucrative_ShouldBe_Parent2() {
-    // Préparation des données d'entrée
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("enfantResidence", "ville");
-    parameters.put("parent1ActiviteLucrative", true);
-    parameters.put("parent2ActiviteLucrative", false);
-    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
-    parameters.put("parent2Salaire", 0); // Aucun salaire pour le parent 2
+    ParentAllocationParams params = new ParentAllocationParams(
+            "ville",
+            true,
+            null,
+            false,
+            null,
+            false,
+            new BigDecimal("2000"),
+            BigDecimal.ZERO
+    );
 
-    // Création d'une instance de la classe contenant la méthode à tester
-    AllocationService instance = new AllocationService();
+    String resultat = allocationService.getParentDroitAllocation(params);
 
-    // Appel de la méthode à tester
-    String resultat = instance.getParentDroitAllocation(parameters);
 
     // Vérification du résultat
     assertEquals("Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
@@ -131,19 +135,18 @@ class AllocationServiceTest {
   }
   @Test
   public void getParentDroitAllocation_Given_Les2ParentsMemeSalaire_ShouldBe_Parent1ETParent2() {
-    // Préparation des données d'entrée
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("enfantResidence", "ville");
-    parameters.put("parent1ActiviteLucrative", true);
-    parameters.put("parent2ActiviteLucrative", true);
-    parameters.put("parent1Salaire", 2000); // Salaire du parent 1
-    parameters.put("parent2Salaire", 2000); // Salaire pareil
+    ParentAllocationParams params = new ParentAllocationParams(
+            "ville", // enfantResidence
+            true,    // parent1ActiviteLucrative
+            null,    // parent1Residence
+            true,    // parent2ActiviteLucrative
+            null,    // parent2Residence
+            false,   // parentsEnsemble
+            new BigDecimal("2000"), // parent1Salaire
+            new BigDecimal("2000")  // parent2Salaire
+    );
 
-    // Création d'une instance de la classe contenant la méthode à tester
-    AllocationService instance = new AllocationService();
-
-    // Appel de la méthode à tester
-    String resultat = instance.getParentDroitAllocation(parameters);
+    String resultat = allocationService.getParentDroitAllocation(params);
 
     // Vérification du résultat
     assertEquals("Parent1"+"Parent2", resultat); // On s'attend à ce que le parent 1 soit sélectionné car il est le seul à avoir une activité lucrative
