@@ -9,7 +9,9 @@ import ch.hearc.cafheg.infrastructure.persistance.AllocataireMapper;
 import ch.hearc.cafheg.infrastructure.persistance.AllocationMapper;
 import ch.hearc.cafheg.infrastructure.persistance.EnfantMapper;
 import ch.hearc.cafheg.infrastructure.persistance.VersementMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import java.util.*;
 public class RESTController {
 
   private final AllocationService allocationService;
+  private final AllocataireService allocataireService;
 
 
   private final VersementService versementService;
@@ -27,6 +30,7 @@ public class RESTController {
     this.allocationService = new AllocationService(new AllocataireMapper(), new AllocationMapper());
     this.versementService = new VersementService(new VersementMapper(), new AllocataireMapper(),
         new PDFExporter(new EnfantMapper()));
+    this.allocataireService = new AllocataireService(new AllocataireMapper(), new VersementMapper());
   }
 
   /*
@@ -78,5 +82,10 @@ public class RESTController {
   @GetMapping(value = "/allocataires/{allocataireId}/versements", produces = MediaType.APPLICATION_PDF_VALUE)
   public byte[] pdfVersements(@PathVariable("allocataireId") int allocataireId) {
     return inTransaction(() -> versementService.exportPDFVersements(allocataireId));
+  }
+
+  @DeleteMapping("/allocataires/{allocataireId}")
+  public String deleteAllocataire(@PathVariable Long allocataireId) {
+    return inTransaction(() -> allocataireService.deleteAllocataireIfNoVersements(allocataireId));
   }
 }
