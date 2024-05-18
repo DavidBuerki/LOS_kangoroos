@@ -11,6 +11,11 @@ public class Allocataire {
     this.nom = nom;
     this.prenom = prenom;
   }
+  public Allocataire() {
+    this.noAVS = null;
+    this.nom = null;
+    this.prenom = null;
+  }
 
   public String getNom() {
     return nom;

@@ -84,8 +84,20 @@ public class RESTController {
     return inTransaction(() -> versementService.exportPDFVersements(allocataireId));
   }
 
-  @DeleteMapping("/allocataires/{allocataireId}")
+  @DeleteMapping("/allocataires/{allocataireId}/delete")
   public String deleteAllocataire(@PathVariable Long allocataireId) {
     return inTransaction(() -> allocataireService.deleteAllocataireIfNoVersements(allocataireId));
+  }
+
+  @GetMapping("/allocataires/{allocataireId}")
+  public Allocataire getAllocataire(@PathVariable Long allocataireId) {
+    return inTransaction(() -> allocataireService.findAllocataireById(allocataireId));
+  }
+
+  @PatchMapping("/allocataires/{allocataireId}/update")
+  public String updateAllocataire(
+          @PathVariable Long allocataireId,
+          @RequestBody Allocataire allocataire) {
+    return inTransaction(() -> allocataireService.updateAllocataire(allocataire, allocataireId));
   }
 }
