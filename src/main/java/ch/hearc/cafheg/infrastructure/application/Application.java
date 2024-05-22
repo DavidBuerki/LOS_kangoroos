@@ -4,16 +4,22 @@ import ch.hearc.cafheg.infrastructure.persistance.Database;
 import ch.hearc.cafheg.infrastructure.persistance.Migrations;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+
+import ch.qos.logback.classic.LoggerContext;
+import org.apache.logging.log4j.spi.LoggerContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 
+import org.slf4j.*;
+
+
 @SpringBootApplication
 @ComponentScan(basePackages = "ch.hearc.cafheg")
 public class Application extends SpringBootServletInitializer {
-
+  private static final Logger logger = LoggerFactory.getLogger(Application.class);
   /**
    * Démarrage de l'application en mode standalone (java -jar ...)
    * @param args Arguments du programme

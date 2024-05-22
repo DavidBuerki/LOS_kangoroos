@@ -3,9 +3,14 @@ package ch.hearc.cafheg.business.allocations;
 import ch.hearc.cafheg.infrastructure.persistance.AllocataireMapper;
 import ch.hearc.cafheg.infrastructure.persistance.VersementMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 
 public class AllocataireService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AllocataireService.class);
 
     private AllocataireMapper allocataireMapper;
     private VersementMapper versementMapper;
@@ -32,33 +37,38 @@ public class AllocataireService {
     }
 
     public String deleteAllocataireIfNoVersements(Long id) {
-        if(!this.versementMapper.findVersementByParentId(id)) {
+        logger.debug("Attempting to delete allocataire with ID: {}", id);
+        if (!this.versementMapper.findVersementByParentId(id)) {
             this.allocataireMapper.delete(id);
+            logger.info("Allocataire deleted successfully with ID: {}", id);
             return "Allocataire supprimé";
-        }else
+        } else {
+            logger.warn("Failed to delete allocataire with ID: {} due to existing versements", id);
             return "Impossible de supprimer l'allocataire, il a des versements";
+        }
     }
+
     public Allocataire findAllocataireById(Long id) {
+        logger.info("Finding allocataire by ID: {}", id);
         return this.allocataireMapper.findById(id);
-}
+    }
 
     public String updateAllocataire(Allocataire allocataire, Long id) {
-        // Trouver l'allocataire actuel par son ID
+        logger.info("Updating allocataire with ID: {}", id);
         Allocataire currentAllocataire = this.allocataireMapper.findById(id);
-
-        // Vérifier si l'allocataire existe
         if (currentAllocataire == null) {
+            logger.warn("No allocataire found with ID: {}", id);
             return "Allocataire non trouvé";
         } else {
-            // Comparer les noms et prénoms en utilisant equals() au lieu de ==
             boolean isNomSame = allocataire.getNom().equals(currentAllocataire.getNom());
             boolean isPrenomSame = allocataire.getPrenom().equals(currentAllocataire.getPrenom());
 
             if (isNomSame && isPrenomSame) {
+                logger.debug("No changes made to allocataire with ID: {}", id);
                 return "Aucune modification apportée";
             } else {
-                // Mise à jour du nom et du prénom si nécessaire
                 this.allocataireMapper.updateNomPrenom(id, allocataire.getNom(), allocataire.getPrenom());
+                logger.info("Allocataire modified successfully with ID: {}", id);
                 return "Allocataire modifié";
             }
         }
