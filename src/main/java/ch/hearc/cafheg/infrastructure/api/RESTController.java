@@ -85,18 +85,18 @@ public class RESTController {
   }
 
   @DeleteMapping("/allocataires/{allocataireId}/delete")
-  public String deleteAllocataire(@PathVariable Long allocataireId) {
+  public String deleteAllocataire(@PathVariable int allocataireId) {
     return inTransaction(() -> allocataireService.deleteAllocataireIfNoVersements(allocataireId));
   }
 
   @GetMapping("/allocataires/{allocataireId}")
-  public Allocataire getAllocataire(@PathVariable Long allocataireId) {
+  public Allocataire getAllocataire(@PathVariable int allocataireId) {
     return inTransaction(() -> allocataireService.findAllocataireById(allocataireId));
   }
 
   @PatchMapping("/allocataires/{allocataireId}/update")
   public String updateAllocataire(
-          @PathVariable Long allocataireId,
+          @PathVariable int allocataireId,
           @RequestBody Allocataire allocataire) {
     return inTransaction(() -> allocataireService.updateAllocataire(allocataire, allocataireId));
   }

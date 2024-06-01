@@ -5,6 +5,8 @@ import ch.hearc.cafheg.infrastructure.persistance.VersementMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
@@ -36,7 +38,7 @@ public class AllocataireService {
         this.versementMapper = versementMapper;
     }
 
-    public String deleteAllocataireIfNoVersements(Long id) {
+    public String deleteAllocataireIfNoVersements(int id) {
         logger.debug("Attempting to delete allocataire with ID: {}", id);
         if (!this.versementMapper.findVersementByParentId(id)) {
             this.allocataireMapper.delete(id);
@@ -48,12 +50,12 @@ public class AllocataireService {
         }
     }
 
-    public Allocataire findAllocataireById(Long id) {
+    public Allocataire findAllocataireById(int id) {
         logger.info("Finding allocataire by ID: {}", id);
         return this.allocataireMapper.findById(id);
     }
 
-    public String updateAllocataire(Allocataire allocataire, Long id) {
+    public String updateAllocataire(Allocataire allocataire, int id) {
         logger.info("Updating allocataire with ID: {}", id);
         Allocataire currentAllocataire = this.allocataireMapper.findById(id);
         if (currentAllocataire == null) {
